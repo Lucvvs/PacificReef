@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Hab {{ object.number }}{% endblock %}
+{% block content %}
+<h2>Hab {{ object.number }} — {{ object.hotel.name }}</h2>
+<p class="text-muted">{{ object.get_room_type_display }} • Cap {{ object.capacity }}</p>
+<p class="fw-semibold mb-3">${{ object.price_per_night }} / noche</p>
+
+<div class="d-flex gap-2">
+  <a class="btn btn-outline-secondary" href="{% url 'room_update' object.pk %}">Editar</a>
+  <a class="btn btn-outline-danger" href="{% url 'room_delete' object.pk %}">Eliminar</a>
+</div>
+
+<h5 class="mt-4">Próximas reservas</h5>
+<ul class="list-group">
+  {% for b in object.reservations.all %}
+    <li class="list-group-item">{{ b.guest_name }} — {{ b.check_in }} → {{ b.check_out }}</li>
+  {% empty %}
+    <li class="list-group-item text-muted">Sin reservas registradas</li>
+  {% endfor %}
+</ul>
+{% endblock %}

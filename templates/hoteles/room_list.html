@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Reservar Habitación{% endblock %}
+{% block extra_css %}
+<style>
+  :root{
+    --turquoise:#14b8a6; /* turquesa protagonista */
+    --near-black:#0c1114; 
+  }
+
+  /* Tarjeta  */
+  .room-card{
+    border: 1px solid rgba(12,17,20,.08);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,.04);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .room-card:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(0,0,0,.10);
+    border-color: rgba(20,184,166,.35);
+  }
+
+  /* Imágenes iguale */
+  .room-img{
+    aspect-ratio: 4 / 3;   
+    object-fit: cover;         
+    width: 100%;
+    display: block;
+  }
+
+  /* Jerarquía tipográfica */
+  .room-type{
+    font-weight: 800;
+    letter-spacing: .2px;
+    line-height: 1.2;
+  }
+  .room-subtitle{
+    color: #6c757d;        
+    font-weight: 600;        
+  }
+  .room-desc{
+    color:#495057;
+    display: -webkit-box;       
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .price-tag{
+    background: var(--near-black);
+    color: var(--turquoise);
+    border: 1px solid var(--turquoise);
+    font-weight: 800;
+    border-radius: 999px;
+    padding: .4rem .75rem;
+    line-height: 1;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px rgba(20,184,166,.15) inset;
+    white-space: nowrap;
+  }
+
+  .btn-select{
+    border-radius: 999px;
+    padding: .45rem 1rem;
+    font-weight: 600;
+  }
+
+  .btn-select:focus, .room-card:focus-within{
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(20,184,166,.35);
+  }
+
+  /*  responsive */
+  @media (max-width: 575.98px){
+    .room-desc{-webkit-line-clamp: 4;}
+  }
+</style>
+{% endblock %}
+{% block content %}
+
+<h2 class="text-center mb-4">Selecciona tu habitación</h2>
+
+<div class="container px-0">
+  <div class="row g-4 row-cols-1 row-cols-sm-2 row-cols-lg-3">
+    {% for room in room_list %}
+      <div class="col">
+        <div class="card room-card h-100">
+          {% if room.image %}
+            <img src="{{ room.image.url }}" class="card-img-top room-img" alt="{{ room.get_room_type_display }}">
+          {% else %}
+            <img src="{% static 'img/habitacion.jpg' %}" class="card-img-top room-img" alt="{{ room.get_room_type_display }}">
+          {% endif %}
+
+          <div class="card-body d-flex flex-column">
+            <h5 class="room-type mb-1">{{ room.get_room_type_display }}</h5>
+            <p class="room-subtitle mb-2">{{ room.spaces }}</p>
+
+            <p class="room-desc mb-3">{{ room.description }}</p>
+
+            <div class="mt-auto d-flex align-items-center justify-content-between">
+              <span class="price-tag">${{ room.price_per_night }} <small class="fw-normal">/ noche</small></span>
+              <a href="#" class="btn btn-primary btn-select" 
+                 data-room-id="{{ room.id }}" 
+                 data-price="{{ room.price_per_night }}">
+                Seleccionar
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-muted">No hay habitaciones disponibles en este momento.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<div id="booking-form-section" style="display: none;">
+  <h3 class="text-center my-4">Completa tu reserva</h3>
+
+
+  <form id="booking-form" class="bg-light p-4 rounded shadow-sm"
+        action="{% url 'res_create' %}" method="post">
+    {% csrf_token %}
+
+    <!-- Enviar el FK real-->
+    <input type="hidden" id="selected-room-id" name="room">
+
+    <input type="hidden" name="guest_name"
+           value="{{ request.user.get_full_name|default:request.user.username }}">
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label for="check-in-date" class="form-label">Fecha de llegada:</label>
+        <input type="date" class="form-control" id="check-in-date" name="check_in" required>
+      </div>
+      <div class="col-md-6">
+        <label for="check-out-date" class="form-label">Fecha de salida:</label>
+        <input type="date" class="form-control" id="check-out-date" name="check_out" required>
+      </div>
+
+
+      <div class="col-12">
+        <label for="guests" class="form-label">Número de huéspedes:</label>
+        <input type="number" class="form-control" id="guests" min="1">
+      </div>
+    </div>
+
+    <hr class="my-4">
+
+    <div id="booking-summary" class="text-center">
+      <p class="fw-bold mb-1">Días a reservar: <span id="days-count">0</span></p>
+      <h4 class="fw-bold">Total a pagar: <span id="total-price">$0</span></h4>
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+      <button type="button" class="btn btn-warning me-md-2" id="cancel-btn">Cancelar</button>
+
+  
+      <button type="submit" class="btn btn-primary" id="reserve-btn">Reservar</button>
+
+      
+    </div>
+  </form>
+</div>
+
+
+
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const selectButtons = document.querySelectorAll('.btn-select');
+  const cards = document.querySelectorAll('.room-card');
+
+  const bookingSection = document.getElementById('booking-form-section');
+  const form = document.getElementById('booking-form');
+
+  const selectedRoomId = document.getElementById('selected-room-id'); // <input type="hidden" id="selected-room-id" name="room">
+  const checkInDate = document.getElementById('check-in-date');
+  const checkOutDate = document.getElementById('check-out-date');
+
+  const daysCountSpan = document.getElementById('days-count');
+  const totalPriceSpan = document.getElementById('total-price');
+  const cancelButton = document.getElementById('cancel-btn');
+
+  let selectedRoomPrice = 0;
+
+  // Formateador CLP 
+  const clp = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
+
+  // ---- mínimos de fecha ----
+  const today = new Date();
+  const toISO = (d) => d.toISOString().slice(0,10);
+
+  checkInDate.min = toISO(today);
+  checkOutDate.min = toISO(today);
+
+  function setCheckoutMinFromCheckin() {
+    if (!checkInDate.value) return;
+    const d = new Date(checkInDate.value);
+    d.setDate(d.getDate() + 1);
+    checkOutDate.min = toISO(d);
+    if (checkOutDate.value && new Date(checkOutDate.value) <= new Date(checkOutDate.min)) {
+      checkOutDate.value = checkOutDate.min;
+    }
+  }
+
+  //  seleccionar habitación 
+  selectButtons.forEach(button => {
+    button.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      // marcar tarjeta seleccionada 
+      cards.forEach(c => c.classList.remove('selected'));
+      selectButtons.forEach(btn => btn.style.display = 'block');
+      this.style.display = 'none';
+      this.closest('.room-card').classList.add('selected');
+
+      // setear 
+      selectedRoomId.value = this.dataset.roomId;
+      selectedRoomPrice = parseFloat(this.dataset.price) || 0;
+
+      // mostrar formulario
+      form.reset();
+      daysCountSpan.textContent = '0';
+      totalPriceSpan.textContent = clp.format(0);
+      setCheckoutMinFromCheckin();
+
+      bookingSection.style.display = 'block';
+      bookingSection.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  // ----  total ----
+  function calculateTotal() {
+    if (!checkInDate.value || !checkOutDate.value) {
+      daysCountSpan.textContent = '0';
+      totalPriceSpan.textContent = clp.format(0);
+      return;
+    }
+
+    const inD  = new Date(checkInDate.value);
+    const outD = new Date(checkOutDate.value);
+
+    if (outD <= inD) {
+      daysCountSpan.textContent = '0';
+      totalPriceSpan.textContent = clp.format(0);
+      return;
+    }
+
+    const MS_PER_DAY = 1000 * 60 * 60 * 24;
+    const days = Math.round((outD - inD) / MS_PER_DAY);
+    daysCountSpan.textContent = String(days);
+
+    const total = days * (isNaN(selectedRoomPrice) ? 0 : selectedRoomPrice);
+    totalPriceSpan.textContent = clp.format(total);
+  }
+
+  checkInDate.addEventListener('change', () => {
+    setCheckoutMinFromCheckin();
+    calculateTotal();
+  });
+  checkOutDate.addEventListener('change', calculateTotal);
+
+  //  cancelar seleccion 
+  cancelButton.addEventListener('click', function () {
+    bookingSection.style.display = 'none';
+    selectedRoomId.value = '';
+    cards.forEach(c => c.classList.remove('selected'));
+    selectButtons.forEach(btn => btn.style.display = 'block');
+  });
+
+  //  validación al enviar 
+  form.addEventListener('submit', function (e) {
+    // requiere habitación seleccionada y fechas válidas
+    if (!selectedRoomId.value) {
+      e.preventDefault();
+      alert('Primero selecciona una habitación.');
+      return;
+    }
+    if (!checkInDate.value || !checkOutDate.value || new Date(checkOutDate.value) <= new Date(checkInDate.value)) {
+      e.preventDefault();
+      alert('Revisa las fechas: la salida debe ser posterior a la llegada.');
+      return;
+    }
+  
+  });
+});
+</script>
+{% endblock %}

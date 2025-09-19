@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block content %}
+<h2>¿Eliminar {{ object }}?</h2>
+<form method="post">{% csrf_token %}
+  <button class="btn btn-danger">Sí, eliminar</button>
+  <a class="btn btn-secondary" href="javascript:history.back()">No</a>
+</form>{% endblock %}

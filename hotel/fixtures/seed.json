@@ -1,0 +1,11 @@
+[
+  {"model": "hotel.hotel", "pk": 1, "fields": {"name": "Pacific Reef", "city": "La Serena", "address": "Av. del Mar 1234", "stars": 4, "description": "Frente a la playa"}},
+  {"model": "hotel.hotel", "pk": 2, "fields": {"name": "Oasis Urbano", "city": "Santiago", "address": "Providencia 456", "stars": 3, "description": "Ubicado en el centro de la ciudad"}},
+  
+  {"model": "hotel.room", "pk": 1, "fields": {"hotel": 1, "number": "101", "room_type": "Habitación Simple", "capacity": 1, "price_per_night": "37000.00", "is_active": true, "description": "✔️ WIFI gratis\n✔️ Escritorio\n✔️ Desayuno\n✔️ TV Cable", "spaces": "1D-1B", "image": "rooms/simple.png"}},
+  {"model": "hotel.room", "pk": 2, "fields": {"hotel": 1, "number": "102", "room_type": "Habitación Doble", "capacity": 2, "price_per_night": "47000.00", "is_active": true, "description": "✔️ WIFI gratis\n✔️ Escritorio\n✔️ Desayuno\n✔️ TV Cable\n✔️ Cena", "spaces": "2D-1B", "image": "rooms/doble.png"}},
+  {"model": "hotel.room", "pk": 3, "fields": {"hotel": 2, "number": "201", "room_type": "Habitación Matrimonial", "capacity": 2, "price_per_night": "48000.00", "is_active": true, "description": "✔️ WIFI gratis\n✔️ Escritorio\n✔️ Desayuno\n✔️ TV Cable\n✔️ Cena\n✔️ 1hr Jacuzzi", "spaces": "1D (King size) - 1B (Grande)", "image": "rooms/matrimonial.png"}},
+  {"model": "hotel.room", "pk": 4, "fields": {"hotel": 2, "number": "202", "room_type": "Habitación Premium", "capacity": 4, "price_per_night": "58000.00", "is_active": true, "description": "✔️ WIFI gratis\n✔️ Escritorio\n✔️ Desayuno\n✔️ TV Cable\n✔️ Cena\n✔️ 1hr Jacuzzi\n✔️ 1hr SPA", "spaces": "2D (King size) - 2B (Grande)", "image": "rooms/premium.png"}},
+  
+  {"model": "hotel.reservation", "pk": 1, "fields": {"room": 1, "guest_name": "Ana Pérez", "check_in": "2025-10-04", "check_out": "2025-10-06", "notes": ""}}
+]

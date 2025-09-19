@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if object %}Editar{% else %}Nueva{% endif %} reserva{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root{ --turquoise:#14b8a6; --near-black:#0c1114; }
+
+  .res-form-wrapper{ max-width: 780px; margin: 0 auto; }
+  .res-card{
+    border: 1px solid rgba(12,17,20,.08);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+  }
+  .res-card-header{
+    background: var(--near-black);
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .res-card-header h3{
+    margin: 0; font-weight: 800; letter-spacing: .2px; color: #fff;  /* título blanco */
+  }
+  .res-card-body{
+    padding: 1.2rem;
+    background: linear-gradient(180deg, #0f1417 0%, #11181b 100%);   /* fondo oscuro moderno */
+  }
+  .form-label{ color: #fff; font-weight: 700; }                      /* labels blancos */
+  .form-control, .form-select{
+    background: #fff; color: #0c1114; border-radius: 12px;
+  }
+  .form-control::placeholder{ color:#6b7680; }
+
+  .btn-rounded{ border-radius: 999px; font-weight: 600; padding: .55rem 1rem; }
+  .actions{ gap:.6rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="res-form-wrapper">
+  <div class="res-card">
+    <div class="res-card-header">
+      <h3>{% if object %}Editar{% else %}Nueva{% endif %} reserva</h3>
+    </div>
+
+    <div class="res-card-body">
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label">Habitación</label>
+          {{ form.room }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Nombre cliente</label>
+          {{ form.guest_name }}
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Fecha de llegada</label>
+            {{ form.check_in }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Fecha de salida</label>
+            {{ form.check_out }}
+          </div>
+        </div>
+
+        <div class="mt-3">
+          <label class="form-label">Notas adicionales</label>
+          {{ form.notes }}
+        </div>
+
+        <div class="d-flex justify-content-end align-items-center actions mt-4">
+          <a href="{% url 'res_list' %}" class="btn btn-outline-light btn-rounded">Cancelar</a>
+          <button type="submit" class="btn btn-primary btn-rounded">Modificar Reserva</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const inEl = document.getElementById('{{ form.check_in.id_for_label }}');
+  const outEl = document.getElementById('{{ form.check_out.id_for_label }}');
+
+  function toISO(d){ return d.toISOString().slice(0,10); }
+  const today = new Date();
+  if (inEl) inEl.min = toISO(today);
+  if (outEl) outEl.min = toISO(today);
+
+  function adjustOutMin(){
+    if(!inEl || !outEl || !inEl.value) return;
+    const d = new Date(inEl.value);
+    d.setDate(d.getDate() + 1);
+    outEl.min = toISO(d);
+    if(outEl.value && new Date(outEl.value) <= new Date(inEl.value)){
+      outEl.value = outEl.min;
+    }
+  }
+  if (inEl) inEl.addEventListener('change', adjustOutMin);
+  adjustOutMin();
+});
+</script>
+{% endblock %}

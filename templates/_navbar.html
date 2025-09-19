@@ -1,0 +1,46 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
+      <img src="{% static 'img/logo-hotel.png' %}" alt="Hotel">
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end" id="mainNav">
+      <ul class="navbar-nav align-items-lg-center gap-lg-2">
+        <li class="nav-item">
+          <a class="nav-link {% if current == 'home' %}active-pill{% endif %}" href="{% url 'home' %}">Inicio</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link {% if current == 'room_list' or current == 'room_detail' %}active-pill{% endif %}" href="{% url 'room_list' %}">Reservar</a>
+        </li>
+
+        {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link {% if current == 'res_list' or current == 'res_detail' %}active-pill{% endif %}" href="{% url 'res_list' %}">Mis reservas</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#contacto">Contacto</a>
+          </li>
+          <li class="nav-item d-flex align-items-center ms-lg-2">
+            <img src="{% static 'img/icono-usuario.png' %}" alt="" class="rounded-circle me-2" style="width:28px;height:28px;object-fit:cover;">
+            <span class="navbar-text text-white-50">{{ user.get_full_name|default:user.username }}</span>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link {% if current == 'login' %}active-pill{% endif %}" href="{% url 'login' %}">Iniciar sesión</a>
+          </li>
+<li class="nav-item">
+    <a class="nav-link {% if current == 'register' %}active-pill{% endif %}" href="{% url 'register' %}">Registro</a>
+</li>          
+<li class="nav-item">
+  <a class="nav-link {% if current == 'contacto' %}active-pill{% endif %}" href="{% url 'contacto' %}">Contacto</a>
+</li>        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

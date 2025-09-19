@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Mis Reservas{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root{
+    --turquoise:#14b8a6;
+    --near-black:#0c1114;
+  }
+  .res-card{
+    border: 1px solid rgba(12,17,20,.08);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,.04);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    height: 100%;
+  }
+  .res-card:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(0,0,0,.10);
+    border-color: rgba(20,184,166,.35);
+  }
+  .res-img{
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    width: 100%;
+    display: block;
+  }
+  .res-type{
+    font-weight: 800;
+    letter-spacing: .2px;
+    line-height: 1.2;
+    margin-bottom: .25rem;
+  }
+  .res-subtitle{
+    color: #6c757d;
+    font-weight: 600;
+    margin-bottom: .5rem;
+  }
+  .res-dates{
+    color:#495057;
+  }
+  .price-pill{
+    background: var(--near-black);
+    color: var(--turquoise);
+    border: 1px solid var(--turquoise);
+    font-weight: 800;
+    border-radius: 999px;
+    padding: .35rem .7rem;
+    line-height: 1;
+    font-size: .95rem;
+    white-space: nowrap;
+  }
+  .badge-status{
+    border: 1px solid rgba(12,17,20,.12);
+    background: #f8f9fa;
+    color: #0c1114;
+    border-radius: 999px;
+    padding: .25rem .6rem;
+    font-weight: 600;
+    font-size: .8rem;
+  }
+  .badge-status.active{ border-color: rgba(20,184,166,.35); color: var(--turquoise); }
+  .badge-status.past{ opacity:.75; }
+  .actions .btn{
+    border-radius: 999px;
+    font-weight: 600;
+    padding: .45rem .9rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<h2 class="text-center mb-4">Mis reservas</h2>
+
+<div class="container px-0">
+  {% if object_list %}
+    <div class="row g-4 row-cols-1 row-cols-sm-2 row-cols-lg-3">
+      {% for res in object_list %}
+        <div class="col">
+          <div class="card res-card">
+            {% if res.room.image %}
+              <img src="{{ res.room.image.url }}" alt="{{ res.room.get_room_type_display }}" class="res-img">
+            {% else %}
+              <img src="{% static 'img/habitacion.jpg' %}" alt="{{ res.room.get_room_type_display }}" class="res-img">
+            {% endif %}
+
+            <div class="card-body d-flex flex-column">
+              <!-- Título  -->
+              <h5 class="res-type mb-0">{{ res.room.get_room_type_display }}</h5>
+              <p class="res-subtitle mb-2">{{ res.room.spaces }}</p>
+
+              <!-- Fechas -->
+              <p class="res-dates mb-3">
+                <i class="bi bi-calendar-event"></i>
+                {{ res.check_in }} &rarr; {{ res.check_out }}
+              </p>
+
+              <!-- Nota  -->
+              {% if res.notes %}
+                <p class="text-muted mb-3" style="min-height: 2.5em; overflow:hidden;">{{ res.notes }}</p>
+              {% else %}
+                <p class="text-muted mb-3" style="min-height: 2.5em;">&nbsp;</p>
+              {% endif %}
+
+              <!-- Footere-->
+              <div class="mt-auto d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <span class="badge-status {% if res.check_out > today %}active{% else %}past{% endif %}">
+                  {% if res.check_out > today %}Activa{% else %}Finalizada{% endif %}
+                </span>
+
+                <span class="price-pill">
+                  ${{ res.room.price_per_night }} <small class="fw-normal">/ noche</small>
+                </span>
+
+                <div class="actions d-flex gap-2">
+                  <a href="{% url 'res_detail' res.pk %}" class="btn btn-outline-secondary btn-sm">Ver</a>
+                  <a href="{% url 'res_update' res.pk %}" class="btn btn-primary btn-sm">Editar</a>
+
+                  <!-- Anularformulario POST al DeleteView -->
+                  <form action="{% url 'res_delete' res.pk %}" method="post" class="d-inline" onsubmit="return confirmCancel(this);">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">Anular</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Paginación -->
+    {% if is_paginated %}
+      <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">«</a></li>
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">«</span></li>
+          {% endif %}
+
+          <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+
+          {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">»</a></li>
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">»</span></li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+  {% else %}
+    <div class="text-center text-muted py-5">
+      <img src="{% static 'img/empty-state-reservas.svg' %}" alt="" style="max-width:220px;" class="mb-3">
+      <p>Aún no tienes reservas. ¿Listo para tu próxima estadía?</p>
+      <a href="{% url 'room_list' %}" class="btn btn-primary">Reservar una habitación</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  if (!window.today) {
+    window.today = new Date().toISOString().slice(0,10);
+  }
+  function confirmCancel(form){
+    return confirm('¿Seguro que deseas anular esta reserva? Esta acción no se puede deshacer.');
+  }
+</script>
+{% endblock %}
