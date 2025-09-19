@@ -26,20 +26,34 @@
           <li class="nav-item">
             <a class="nav-link" href="#contacto">Contacto</a>
           </li>
+
+          {# ---- Reemplazo: avatar + nombre hacen POST a logout ---- #}
           <li class="nav-item d-flex align-items-center ms-lg-2">
-            <img src="{% static 'img/icono-usuario.png' %}" alt="" class="rounded-circle me-2" style="width:28px;height:28px;object-fit:cover;">
-            <span class="navbar-text text-white-50">{{ user.get_full_name|default:user.username }}</span>
+            <form method="post" action="{% url 'logout' %}" class="m-0 p-0 d-flex align-items-center">
+              {% csrf_token %}
+              <button type="submit"
+                      class="btn btn-link d-flex align-items-center p-0 text-white-50"
+                      style="text-decoration:none; border:none; background:transparent; cursor:pointer;"
+                      title="Cerrar sesión">
+                <img src="{% static 'img/icono-usuario.png' %}"
+                     alt="Avatar"
+                     class="rounded-circle me-2"
+                     style="width:28px;height:28px;object-fit:cover;">
+                <span class="navbar-text text-white-50">{{ user.get_full_name|default:user.username }}</span>
+              </button>
+            </form>
           </li>
         {% else %}
           <li class="nav-item">
             <a class="nav-link {% if current == 'login' %}active-pill{% endif %}" href="{% url 'login' %}">Iniciar sesión</a>
           </li>
-<li class="nav-item">
-    <a class="nav-link {% if current == 'register' %}active-pill{% endif %}" href="{% url 'register' %}">Registro</a>
-</li>          
-<li class="nav-item">
-  <a class="nav-link {% if current == 'contacto' %}active-pill{% endif %}" href="{% url 'contacto' %}">Contacto</a>
-</li>        {% endif %}
+          <li class="nav-item">
+            <a class="nav-link {% if current == 'register' %}active-pill{% endif %}" href="{% url 'register' %}">Registro</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if current == 'contacto' %}active-pill{% endif %}" href="{% url 'contacto' %}">Contacto</a>
+          </li>
+        {% endif %}
       </ul>
     </div>
   </div>
