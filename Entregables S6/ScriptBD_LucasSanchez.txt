@@ -1,0 +1,83 @@
+DROP TABLE IF EXISTS pago;
+DROP TABLE IF EXISTS reserva;
+DROP TABLE IF EXISTS habitacion;
+DROP TABLE IF EXISTS cliente;
+DROP TABLE IF EXISTS hotel;
+
+
+CREATE TABLE hotel (
+  hotel_id   INTEGER PRIMARY KEY AUTOINCREMENT,
+  nombre     TEXT NOT NULL,
+  direccion  TEXT NOT NULL,
+  categoria  TEXT NOT NULL
+);
+
+CREATE TABLE habitacion (
+  habitacion_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  hotel_id      INTEGER NOT NULL,
+  tipo          TEXT NOT NULL,       
+  capacidad     INTEGER NOT NULL,
+  precio        REAL NOT NULL,
+  FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id)
+);
+
+CREATE TABLE cliente (
+  cliente_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  nombre     TEXT NOT NULL,
+  apellido   TEXT NOT NULL,
+  correo     TEXT NOT NULL,
+  telefono   TEXT NOT NULL
+);
+
+CREATE TABLE reserva (
+  reserva_id        INTEGER PRIMARY KEY AUTOINCREMENT,
+  cliente_id        INTEGER NOT NULL,
+  habitacion_id     INTEGER NOT NULL,
+  fecha_entrada     TEXT NOT NULL,      
+  fecha_salida      TEXT NOT NULL,      
+  cantidad_personas INTEGER NOT NULL,
+  estado            TEXT DEFAULT 'pendiente', 
+  FOREIGN KEY (cliente_id)    REFERENCES cliente(cliente_id),
+  FOREIGN KEY (habitacion_id) REFERENCES habitacion(habitacion_id)
+);
+
+CREATE TABLE pago (
+  pago_id    INTEGER PRIMARY KEY AUTOINCREMENT,
+  reserva_id INTEGER UNIQUE NOT NULL,   
+  monto      REAL NOT NULL,
+  fecha      TEXT NOT NULL,            
+  resultado  TEXT NOT NULL,             
+  FOREIGN KEY (reserva_id) REFERENCES reserva(reserva_id)
+);
+
+
+-- datos de prueba 
+INSERT INTO hotel (nombre, direccion, categoria) VALUES
+('Pacific Reef', 'Av. Costanera 123, Viña del Mar', '4*');
+
+INSERT INTO habitacion (hotel_id, tipo, capacidad, precio) VALUES
+(1, 'Standard', 2, 65000.00),
+(1, 'Deluxe',   3, 89000.00),
+(1, 'Suite',    4, 129000.00);
+
+INSERT INTO cliente (nombre, apellido, correo, telefono) VALUES
+('Ana',  'Pérez',  'ana.perez@mail.com',  '+56 9 1111 1111'),
+('Luis', 'Gómez',  'luis.gomez@mail.com', '+56 9 2222 2222');
+
+
+INSERT INTO reserva (cliente_id, habitacion_id, fecha_entrada, fecha_salida, cantidad_personas)
+VALUES (2, 2, '2025-09-20', '2025-09-22', 2);
+
+
+INSERT INTO pago (reserva_id, monto, fecha, resultado)
+VALUES (1, 2 * (SELECT precio FROM habitacion WHERE habitacion_id=2), '2025-09-19', 'aprobado');
+
+
+UPDATE reserva SET estado='confirmada' WHERE reserva_id=1;
+
+
+SELECT * FROM hotel;
+SELECT * FROM habitacion;
+SELECT * FROM cliente;
+SELECT * FROM reserva;
+SELECT * FROM pago;
