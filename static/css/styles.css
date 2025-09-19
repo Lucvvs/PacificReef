@@ -103,3 +103,20 @@ p {
         opacity: 0.9;
     }
 }
+
+
+/* ocultar listas de error y textos de ayuda dentro de los auth-card / contact */
+.auth-card .errorlist,
+.auth-card .invalid-feedback,
+.auth-card .form-text,
+.auth-card .helptext,
+.auth-card .alert-danger {
+  display: none !important;
+}
+
+/* si usas contact-container / contact-wrap también */
+.contact-container .errorlist,
+.contact-container .form-text,
+.contact-container .alert-danger {
+  display: none !important;
+}

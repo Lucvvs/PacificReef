@@ -25,10 +25,16 @@ urlpatterns = [
     path("reservas/<int:pk>/", views.ResDetail.as_view(), name="res_detail"),
     path("reservas/<int:pk>/editar/", views.ResUpdate.as_view(), name="res_update"),
     path("reservas/<int:pk>/eliminar/", views.ResDelete.as_view(), name="res_delete"),
+     path("reservas/<int:pk>/comprobante/", views.res_invoice, name="res_invoice"),
 
-    # Registro de Usuarios
+    # Ruta para cancelar (POST)
+    path("reservas/<int:pk>/cancel/", views.res_cancel, name="res_cancel"),
+
+    # (opcional) ruta para descargar comprobante / factura si la implementas
+    # path("reservas/<int:pk>/comprobante/", views.res_invoice, name="res_invoice"),
+
+    # Registro / Contacto
     path("register/", Registro.as_view(), name="register"),
     path("contacto/", Contacto.as_view(), name="contacto"),
+   
 ]
-
-

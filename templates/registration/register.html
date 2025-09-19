@@ -1,5 +1,3 @@
-
-
 {% extends "base.html" %}
 {% load static %}
 
@@ -7,73 +5,209 @@
 
 {% block extra_css %}
 <style>
-    .register-container {
-        max-width: 420px;
-        margin: auto;
-        padding: 2.5rem;
-        background-color: #ffffff;
-        border-radius: 1rem;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        text-align: center;
-    }
-    .register-header h2 {
-        font-weight: 700;
-        color: #343a40;
-    }
-    .form-control:focus {
-        border-color: #ffc107;
-        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
-    }
-    .btn-primary {
-        background-color: #ffc107;
-        border-color: #ffc107;
-        color: #212529;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-    .btn-primary:hover {
-        background-color: #e0a800;
-        border-color: #e0a800;
-    }
+  :root{
+    --bg:#070708;
+    --card:#0f1720;
+    --muted:#9aa2ac;
+    --accent:#ffc107;
+    --accent-2:#e0a800;
+    --radius:12px;
+  }
+
+  body { background: linear-gradient(180deg,#050506 0%, #0b0b0c 100%); }
+
+  .register-wrap {
+    min-height: calc(100vh - 120px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:2.5rem 1rem;
+  }
+
+  /* Clase común para auth (login / register) */
+  .auth-card {
+    width:100%;
+    max-width:480px;
+    background-color: rgba(15, 23, 30, 0.70);
+    border-radius: var(--radius);
+    padding:2rem;
+    color:#fff;
+    box-shadow: 0 14px 40px rgba(2,6,23,0.7);
+    border:1px solid rgba(255,255,255,0.03);
+    position:relative;
+  }
+
+  .brand {
+    display:flex;
+    gap:.75rem;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:.85rem;
+  }
+  .brand img { height:56px; width:auto; border-radius:10px; padding:6px; background:rgba(255,255,255,0.02); box-shadow: 0 6px 18px rgba(0,0,0,0.6); }
+  .brand h1 { margin:0; font-size:1.05rem; font-weight:800; letter-spacing:-0.02em; color:#fff; }
+  .brand p { margin:0; color:var(--muted); font-size:.78rem; }
+
+  .auth-header { text-align:center; margin-bottom:1rem; }
+  .auth-header h2 { margin:0; font-size:1.45rem; font-weight:800; color:#fff; }
+  .auth-header small { display:block; color:var(--muted); margin-top:.35rem; }
+
+  .form-group { margin-bottom:1rem; }
+  .form-label { display:block; margin-bottom:.35rem; color:var(--muted); font-size:.9rem; }
+
+  /* inputs genericos dentro de la tarjeta */
+  .auth-card input[type="text"],
+  .auth-card input[type="password"],
+  .auth-card input[type="email"],
+  .auth-card textarea,
+  .auth-card select {
+    width:100%;
+    padding:12px 14px;
+    height:48px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,0.06);
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    color:#fff;
+    transition: box-shadow .12s ease, border-color .12s ease, transform .06s ease;
+    outline:none;
+    font-size: .95rem;
+  }
+  .auth-card input::placeholder { color: rgba(255,255,255,0.45); }
+  .auth-card input:focus,
+  .auth-card textarea:focus,
+  .auth-card select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 8px 28px rgba(255,193,7,0.08), 0 0 0 6px rgba(255,193,7,0.06);
+    transform: translateY(-1px);
+  }
+  textarea { min-height:120px; resize:vertical; padding-top:12px; padding-bottom:12px; }
+
+  /* toggle para passwords */
+  .pwd-wrap { position:relative; }
+  .pwd-toggle-btn {
+    position:absolute; right:8px; top:50%; transform:translateY(-50%);
+    border:none; background:transparent; color:var(--muted); padding:6px; cursor:pointer;
+  }
+
+  .btn-primary-strong {
+    width:100%;
+    height:50px;
+    border-radius:10px;
+    border:none;
+    font-weight:800;
+    background: linear-gradient(90deg,var(--accent), var(--accent-2));
+    color:#111;
+    box-shadow: 0 10px 26px rgba(224,168,0,0.14), inset 0 -2px 0 rgba(255,255,255,0.03);
+    transition: transform .12s ease;
+  }
+  .btn-primary-strong:hover { transform: translateY(-3px); }
+
+  .helper-links { margin-top:.6rem; display:flex; justify-content:space-between; align-items:center; gap:10px; color:var(--muted); font-size:.9rem; }
+  .helper-links a { color:var(--muted); text-decoration:none; }
+  .helper-links a:hover { color:#fff; text-decoration:underline; }
+
+  .divider { display:flex; align-items:center; gap:12px; margin:1.1rem 0; }
+  .divider::before,.divider::after{ content:""; flex:1; height:1px; background:rgba(255,255,255,0.04); }
+  .divider span{ color:var(--muted); font-size:.85rem; }
+
+  .small-note { margin-top:.9rem; color:var(--muted); font-size:.85rem; text-align:center; }
+
+  /* errores */
+  .auth-card .alert { background: rgba(255, 70, 70, 0.06); color: #ffdede; border: 1px solid rgba(255,70,70,0.12); }
+
+  @media (max-width:480px) {
+    .auth-card{ padding:1.15rem; }
+    .brand img{ height:48px; }
+    .auth-header h2{ font-size:1.2rem; }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="register-container">
-        <div class="register-header mb-4">
-            <h2 class="mb-2">Crear una cuenta</h2>
-            <p class="text-muted">Regístrate para comenzar a gestionar tus reservas.</p>
-        </div>
-        
-        <form method="post">
-            {% csrf_token %}
-            {% if form.errors %}
-                {% for field in form %}
-                    {% for error in field.errors %}
-                        <div class="alert alert-danger" role="alert">
-                            {{ error }}
-                        </div>
-                    {% endfor %}
-                {% endfor %}
-                {% for error in form.non_field_errors %}
-                    <div class="alert alert-danger" role="alert">
-                        {{ error }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-
-            {% for field in form %}
-                <div class="mb-3">
-                    <label for="{{ field.id_for_label }}" class="form-label text-start d-block">{{ field.label }}:</label>
-                    {{ field }}
-                </div>
-            {% endfor %}
-
-            <button type="submit" class="btn btn-primary w-100 mb-3">Registrarse</button>
-        </form>
-
-        <p class="text-muted mb-0">¿Ya tienes una cuenta? <a href="{% url 'login' %}" class="text-decoration-none fw-bold">Inicia sesión</a></p>
+<div class="container register-wrap">
+  <main class="auth-card" role="main" aria-labelledby="registerTitle">
+    <div class="brand" aria-hidden="true">
+      <img src="{% static 'img/logo22.png' %}" alt="Logo">
+      <div>
+        <h1>Pacific Reef</h1>
+        <p>Crear cuenta</p>
+      </div>
     </div>
+
+    <header class="auth-header">
+      <h2 id="registerTitle">Crear una cuenta</h2>
+      <small>Regístrate para comenzar a gestionar tus reservas</small>
+    </header>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      {# Muestra errores no-field y errores de campos (estilo similar al login) #}
+      {% if form.errors %}
+        {% for field in form %}
+          {% for error in field.errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+          {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+          <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+
+      {# Render de campos: si querés que salgan en orden específico, ponlos manualmente; aquí iteramos genericamente #}
+      {% for field in form %}
+        <div class="form-group {% if field.field.widget.input_type == 'password' %}pwd-wrap{% endif %}">
+          <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+            <small class="form-text text-muted" style="color:var(--muted)">{{ field.help_text }}</small>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div style="margin-top: .6rem;">
+        <button type="submit" class="btn-primary-strong">Registrarse</button>
+      </div>
+
+      <div class="divider"><span>o</span></div>
+
+      <p class="small-note">¿Ya tienes una cuenta? <a href="{% url 'login' %}" style="color:var(--accent); font-weight:700; text-decoration:none;">Inicia sesión</a></p>
+    </form>
+  </main>
 </div>
+
+<script>
+  // Añade botones para mostrar/ocultar todos los inputs password que se rendericen en el form
+  (function(){
+    const pwdInputs = Array.from(document.querySelectorAll('.auth-card input[type="password"]'));
+    pwdInputs.forEach((input, idx) => {
+      // evita duplicar si ya existe
+      const parent = input.closest('.pwd-wrap') || input.parentElement;
+      if (!parent) return;
+
+      // crear botón solo si no existe
+      if (parent.querySelector('.pwd-toggle-btn')) return;
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'pwd-toggle-btn';
+      btn.setAttribute('aria-label','Mostrar contraseña');
+      btn.textContent = 'Mostrar';
+      btn.addEventListener('click', () => {
+        if (input.type === 'password') {
+          input.type = 'text';
+          btn.textContent = 'Ocultar';
+          btn.setAttribute('aria-pressed','true');
+        } else {
+          input.type = 'password';
+          btn.textContent = 'Mostrar';
+          btn.setAttribute('aria-pressed','false');
+        }
+        input.focus();
+      });
+      parent.style.position = 'relative';
+      parent.appendChild(btn);
+    });
+  })();
+</script>
 {% endblock %}

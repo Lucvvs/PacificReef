@@ -5,60 +5,213 @@
 
 {% block extra_css %}
 <style>
-    .contact-container {
-        max-width: 600px;
-        margin: auto;
-        padding: 2.5rem;
-        background-color: #ffffff;
-        border-radius: 1rem;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-    .contact-header h2 {
-        font-weight: 700;
-        color: #343a40;
-    }
-    .form-control:focus {
-        border-color: #ffc107;
-        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
-    }
-    .btn-primary {
-        background-color: #ffc107;
-        border-color: #ffc107;
-        color: #212529;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-    .btn-primary:hover {
-        background-color: #e0a800;
-        border-color: #e0a800;
-    }
+  :root{
+    --accent: #ffc107;   /* amarillo */
+    --accent-strong: #e0a800;
+    --muted: #6c757d;
+    --bg: #ffffff;
+    --card-radius: 14px;
+  }
+
+  .contact-wrap {
+    padding: 3.5rem 1rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .contact-container {
+    width: 100%;
+    max-width: 700px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(250,250,250,0.95));
+    border-radius: var(--card-radius);
+    box-shadow: 0 10px 30px rgba(9, 30, 60, 0.08);
+    padding: 2.25rem;
+    border: 1px solid rgba(15,15,15,0.03);
+  }
+
+  .contact-header {
+    text-align: center;
+    margin-bottom: 1.25rem;
+  }
+  .contact-header h2 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #111827;
+    background: linear-gradient(90deg, rgba(0,0,0,0.85), rgba(0,0,0,0.6));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .contact-header p {
+    margin: .25rem 0 0;
+    color: var(--muted);
+    font-size: .95rem;
+  }
+
+  /* Input con ícono */
+  .input-icon {
+    position: relative;
+  }
+  .input-icon svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    opacity: .65;
+    pointer-events: none;
+  }
+  .input-icon .form-control {
+    padding-left: 42px;
+    padding-right: 14px;
+    height: 48px;
+    border-radius: 10px;
+    border: 1px solid rgba(15,15,15,0.08);
+    background: linear-gradient(180deg, #fff, #fbfbfb);
+    transition: all .18s ease;
+  }
+
+  .input-icon .form-control:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 6px 20px rgba(255,193,7,0.12), 0 0 0 4px rgba(255,193,7,0.08);
+  }
+
+  textarea.form-control {
+    min-height: 140px;
+    resize: vertical;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .form-label {
+    font-weight: 600;
+    font-size: .9rem;
+    display:block;
+    margin-bottom: .35rem;
+    color: #2b2b2b;
+  }
+
+  .muted-note {
+    font-size: .88rem;
+    color: var(--muted);
+    margin-bottom: .75rem;
+  }
+
+  /* Botón principal */
+  .btn-send {
+    border-radius: 12px;
+    height: 48px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+    border: none;
+    color: #111;
+    box-shadow: 0 8px 20px rgba(224,168,0,0.14), inset 0 -2px 0 rgba(0,0,0,0.03);
+    transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+  }
+  .btn-send:hover { transform: translateY(-2px); opacity: .98; }
+  .btn-send:active { transform: translateY(0); }
+
+  .btn-send .spinner-border{
+    width: 1rem;
+    height: 1rem;
+    border-width: .12rem;
+  }
+
+  /* Pie */
+  .contact-footer {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: .9rem;
+    color: var(--muted);
+  }
+
+  /* Responsive */
+  @media (max-width: 576px) {
+    .contact-container { padding: 1.25rem; border-radius: 10px; }
+    .input-icon .form-control { height:44px; padding-left: 40px; }
+    .contact-header h2 { font-size: 1.3rem; }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="contact-container text-center">
-        <div class="contact-header mb-4">
-            <h2 class="mb-2">Contáctanos</h2>
-            <p class="text-muted">Estamos aquí para ayudarte. Completa el formulario y te responderemos lo antes posible.</p>
-        </div>
-        
-        <form method="post">
-            {% csrf_token %}
-            <div class="mb-3 text-start">
-                <label for="id_name" class="form-label">Nombre:</label>
-                <input type="text" class="form-control" id="id_name" name="name" required>
-            </div>
-            <div class="mb-3 text-start">
-                <label for="id_email" class="form-label">Correo Electrónico:</label>
-                <input type="email" class="form-control" id="id_email" name="email" required>
-            </div>
-            <div class="mb-4 text-start">
-                <label for="id_message" class="form-label">Mensaje:</label>
-                <textarea class="form-control" id="id_message" name="message" rows="5" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Enviar Mensaje</button>
-        </form>
+<div class="container contact-wrap">
+  <div class="contact-container">
+    <div class="contact-header">
+      <h2>Contáctanos</h2>
+      <p class="text-muted">¿Tienes dudas o necesitas ayuda con una reserva? Escríbenos y te respondemos a la brevedad.</p>
     </div>
+
+    <form method="post" id="contactForm" novalidate>
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label for="id_name" class="form-label">Nombre</label>
+        <div class="input-icon">
+          <!-- ícono inline: user -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="color: #8a8a8a;">
+            <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM2 20a9.97 9.97 0 0 1 20 0H2z"/>
+          </svg>
+          <input type="text" id="id_name" name="name" class="form-control" placeholder="Tu nombre completo" required aria-label="Nombre">
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="id_email" class="form-label">Correo electrónico</label>
+        <div class="input-icon">
+          <!-- ícono inline: mail -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="color: #8a8a8a;">
+            <path d="M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v0l-11 7L2 6z"/><path d="M22 8.2V18a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.2l9.6 6.13a1 1 0 0 0 1 0L22 8.2z"/>
+          </svg>
+          <input type="email" id="id_email" name="email" class="form-control" placeholder="tu@ejemplo.com" required aria-label="Correo electrónico">
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="id_message" class="form-label">Mensaje</label>
+        <div class="input-icon">
+          <!-- ícono inline: message -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="color: #8a8a8a;">
+            <path d="M21 6v9a2 2 0 0 1-2 2H7l-4 4V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <textarea id="id_message" name="message" rows="5" class="form-control" placeholder="Escribe tu consulta aquí..." required aria-label="Mensaje"></textarea>
+        </div>
+      </div>
+
+      <div class="d-grid">
+        <button type="submit" class="btn btn-send" id="submitBtn" aria-label="Enviar mensaje">
+          <span class="me-2 d-inline-block align-middle">Enviar Mensaje</span>
+          <span class="spinner-border spinner-border-sm text-dark d-none" role="status" aria-hidden="true"></span>
+        </button>
+      </div>
+    </form>
+
+    <div class="contact-footer mt-3">
+      <small>También puedes escribirnos al WhatsApp o llamarnos en horario de atención.</small>
+    </div>
+  </div>
 </div>
+
+<script>
+  (function(){
+    const form = document.getElementById('contactForm');
+    const btn = document.getElementById('submitBtn');
+    const spinner = btn.querySelector('.spinner-border');
+
+    form.addEventListener('submit', function(e){
+      if (!form.checkValidity()) {
+        return;
+      }
+      spinner.classList.remove('d-none');
+      btn.setAttribute('disabled','disabled');
+
+
+    
+    }, false);
+  })();
+</script>
 {% endblock %}
