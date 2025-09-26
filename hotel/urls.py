@@ -30,8 +30,6 @@ urlpatterns = [
     # Ruta para cancelar (POST)
     path("reservas/<int:pk>/cancel/", views.res_cancel, name="res_cancel"),
 
-    # (opcional) ruta para descargar comprobante / factura si la implementas
-    # path("reservas/<int:pk>/comprobante/", views.res_invoice, name="res_invoice"),
 
     # Registro / Contacto
     path("register/", Registro.as_view(), name="register"),
