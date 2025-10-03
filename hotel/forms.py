@@ -1,5 +1,9 @@
 from django import forms
 from .models import Reservation, Room
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from captcha.fields import ReCaptchaField
+from captcha.widgets import ReCaptchaV2Checkbox
 
 class ReservationForm(forms.ModelForm):
     
@@ -50,3 +54,12 @@ class ReservationForm(forms.ModelForm):
         if user:
             self.fields["guest_name"].initial = (user.get_full_name() or user.username)
         self.fields["guest_name"].disabled = True 
+
+
+
+class CustomUserCreationForm(UserCreationForm):
+    captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox())
+
+    class Meta:
+        model = User
+        fields = ["username", "email", "password1", "password2", "captcha"]   

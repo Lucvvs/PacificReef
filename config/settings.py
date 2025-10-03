@@ -1,10 +1,11 @@
 
 
 from pathlib import Path
+import os
 
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent  # => ...\Pacificreef
+BASE_DIR = Path(__file__).resolve().parent.parent  
 
 
 
@@ -15,6 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent  # => ...\Pacificreef
 SECRET_KEY = 'django-insecure-q$pzsbvbo%&5z*mmv#rh1k9j*3!lirm62ojv)&$g=2)c-h0e+b'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = True
 
 ALLOWED_HOSTS = []
@@ -30,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'captcha',
     'hotel',
 ]
 
@@ -49,8 +52,8 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ BASE_DIR / 'templates' ],   # 👈 esto debe apuntar a /templates
-        'APP_DIRS': True,                     # 👈 True para templates dentro de apps
+        'DIRS': [ BASE_DIR / 'templates' ],  
+        'APP_DIRS': True,                     
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -125,4 +128,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGOUT_REDIRECT_URL = '/'
 
 USE_I18N = True
-LANGUAGE_CODE = 'es'   # español
+LANGUAGE_CODE = 'es' 
+
+# KEys captcha de google
+
+RECAPTCHA_PUBLIC_KEY  = "6Leynd0rAAAAAIwj_tGS9je_Yq-AeUopYMAdRWoh"
+RECAPTCHA_PRIVATE_KEY = "6Leynd0rAAAAAFRVz_pWCwtxktnhPXeft8SW_XW7"

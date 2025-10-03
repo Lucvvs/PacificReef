@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from decimal import Decimal
 from datetime import date
+from .forms import CustomUserCreationForm
 
 from .models import Hotel, Room, Reservation
 
@@ -284,7 +285,7 @@ class ResDelete(LoginRequiredMixin, DeleteView):
 # --------- Registro / Contacto ---------
 class Registro(CreateView):
     template_name = 'registration/register.html'
-    form_class = UserCreationForm
+    form_class = CustomUserCreationForm    
     success_url = reverse_lazy('login')
 
 
