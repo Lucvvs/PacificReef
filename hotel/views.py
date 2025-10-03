@@ -11,12 +11,48 @@ from django.contrib import messages
 from decimal import Decimal
 from datetime import date
 from .forms import CustomUserCreationForm
+import requests
+from django.conf import settings
 
 from .models import Hotel, Room, Reservation
 
 
 class Home(TemplateView):
     template_name = "base_home.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        url = "https://my.meteoblue.com/packages/basic-1h_basic-day"
+        params = {
+            "apikey": settings.METEOBLUE_API_KEY,
+            "lat": -33.4569,   # Santiago
+            "lon": -70.6483,
+            "asl": 556,
+            "format": "json"
+        }
+        try:
+            r = requests.get(url, params=params, timeout=10)
+            data = r.json()
+
+            # 👇 Guardar los próximos 7 días como lista
+            clima = []
+            if "data_day" in data and "time" in data["data_day"]:
+                for i in range(min(7, len(data["data_day"]["time"]))):
+                    clima.append({
+                        "fecha": data["data_day"]["time"][i],
+                        "temp_max": data["data_day"]["temperature_max"][i],
+                        "temp_min": data["data_day"]["temperature_min"][i],
+                        "precip": data["data_day"]["precipitation"][i],
+                    })
+            context["clima"] = clima
+        except Exception as e:
+            print("Error consultando Meteoblue:", e)
+            context["clima"] = []
+
+        return context
+
+    
 
 
 # --------- Hoteles ---------
@@ -54,6 +90,35 @@ class RoomList(ListView):
         ctx = super().get_context_data(**kwargs)
         ctx["current"] = "room_list"
         return ctx
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        url = "https://my.meteoblue.com/packages/basic-1h_basic-day"
+        params = {
+            "apikey": settings.METEOBLUE_API_KEY,
+            "lat": -33.4569,
+            "lon": -70.6483,
+            "asl": 556,
+            "format": "json"
+        }
+        try:
+            r = requests.get(url, params=params, timeout=5)
+            data = r.json()
+            clima = []
+            if "data_day" in data and "time" in data["data_day"]:
+                for i in range(min(3, len(data["data_day"]["time"]))):
+                    clima.append({
+                        "fecha": data["data_day"]["time"][i],
+                        "temp_max": data["data_day"]["temperature_max"][i],
+                        "temp_min": data["data_day"]["temperature_min"][i],
+                    })
+            context["clima"] = clima
+        except Exception as e:
+            context["clima"] = []
+            print("Error clima contacto:", e)
+
+        return context
 
 class RoomDetail(DetailView):
     model = Room
@@ -291,7 +356,7 @@ class Registro(CreateView):
 
 class Contacto(TemplateView):
     template_name = "contacto.html"
-
+    
 
 
 @login_required
@@ -351,3 +416,37 @@ def res_invoice(request, pk):
         'currency': getattr(reservation, 'currency', 'CLP'),
     }
     return render(request, 'reservations/invoice.html', context)
+
+
+
+
+
+#Funcion ara el clima
+def get_weather_meteoblue():
+    url = "https://my.meteoblue.com/packages/basic-1h_basic-day"
+    params = {
+        "apikey": "wtsb78MJjGLBo9rl",   # tu key
+        "lat": -33.4569,
+        "lon": -70.6483,
+        "asl": 556,
+        "format": "json"
+    }
+    r = requests.get(url, params=params, timeout=10)
+    data = r.json()
+
+    # 👉 Debug: imprime la respuesta en consola
+    print(data)
+
+    if "data_day" in data and "time" in data["data_day"]:
+        return {
+            "fecha": data["data_day"]["time"][0],
+            "temp_max": data["data_day"]["temperature_max"][0],
+            "temp_min": data["data_day"]["temperature_min"][0],
+            "precip": data["data_day"]["precipitation"][0],
+        }
+    return None
+
+
+def home(request):
+    clima = get_weather_meteoblue()
+    return render(request, "home.html", {"clima": clima})
