@@ -140,6 +140,11 @@
       </div>
     </div>
 
+    <div id="whatsapp-button-container">
+    <a href="https://wa.me/XXXXXXXXXXX" target="_blank"> <img src="{% static 'img/wsp.png' %}" alt="Contactar por WhatsApp">
+    </a>
+</div>
+
     <header class="auth-header">
       <h2 id="registerTitle">Crear una cuenta</h2>
       <small>Regístrate para comenzar a gestionar tus reservas</small>
@@ -202,20 +207,17 @@
   </main>
 </div>
 
-{# 👇 Script oficial de Google reCAPTCHA (necesario para grecaptcha.getResponse) #}
+{# scrip google captcha #}
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  // Enganchar el form por ID (evita null en addEventListener)
   const form = document.getElementById("registerForm");
   if (!form) return;
 
-  // Mensaje inline por JS (UX); el backend igualmente valida
   const inlineErr = document.getElementById("captcha-inline-error");
 
   form.addEventListener("submit", function(e) {
-    // Si la API aún no cargó, deja que Django valide (no bloqueamos)
     if (typeof grecaptcha === "undefined") return;
 
     const response = grecaptcha.getResponse();
@@ -224,14 +226,12 @@ document.addEventListener("DOMContentLoaded", function() {
     if (!response || response.length === 0) {
       e.preventDefault();
       if (inlineErr) inlineErr.classList.remove("d-none");
-      // opcional: scroll hacia el captcha para que el usuario lo vea
       try { document.querySelector(".g-recaptcha").scrollIntoView({behavior:"smooth", block:"center"}); } catch(e){}
     } else {
       if (inlineErr) inlineErr.classList.add("d-none");
     }
   });
 
-  // Toggle password (igual a tu lógica original, sin romper nada)
   const pwdInputs = document.querySelectorAll('.auth-card input[type="password"]');
   pwdInputs.forEach((input) => {
     const parent = input.closest('.pwd-wrap') || input.parentElement;

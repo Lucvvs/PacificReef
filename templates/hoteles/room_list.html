@@ -81,7 +81,10 @@
 {% block content %}
 
 <h2 class="text-center mb-4">Selecciona tu habitación</h2>
-
+<div id="whatsapp-button-container">
+    <a href="https://wa.me/XXXXXXXXXXX" target="_blank"> <img src="{% static 'img/wsp.png' %}" alt="Contactar por WhatsApp">
+    </a>
+</div>
 <div class="container px-0">
   <div class="row g-4 row-cols-1 row-cols-sm-2 row-cols-lg-3">
     {% for room in room_list %}

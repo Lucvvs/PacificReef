@@ -35,7 +35,7 @@ class Home(TemplateView):
             r = requests.get(url, params=params, timeout=10)
             data = r.json()
 
-            # 👇 Guardar los próximos 7 días como lista
+            # guardar dias
             clima = []
             if "data_day" in data and "time" in data["data_day"]:
                 for i in range(min(7, len(data["data_day"]["time"]))):
@@ -393,30 +393,48 @@ def res_invoice(request, pk):
 
 
 
-#Funcion ara el clima
+# Funcion para el clima
+import requests
+
 def get_weather_meteoblue():
     url = "https://my.meteoblue.com/packages/basic-1h_basic-day"
     params = {
-        "apikey": "wtsb78MJjGLBo9rl",   # tu key
+        "apikey": "wtsb78MJjGLBo9rl",
         "lat": -33.4569,
         "lon": -70.6483,
         "asl": 556,
         "format": "json"
     }
-    r = requests.get(url, params=params, timeout=10)
-    data = r.json()
-
-    # 👉 Debug: imprime la respuesta en consola
-    print(data)
-
-    if "data_day" in data and "time" in data["data_day"]:
-        return {
-            "fecha": data["data_day"]["time"][0],
-            "temp_max": data["data_day"]["temperature_max"][0],
-            "temp_min": data["data_day"]["temperature_min"][0],
-            "precip": data["data_day"]["precipitation"][0],
-        }
-    return None
+    
+    try:
+        r = requests.get(url, params=params, timeout=10)
+        r.raise_for_status() 
+        data = r.json()
+        
+    except requests.exceptions.RequestException as e:
+        print(f"Error al conectar con Meteoblue: {e}")
+        return []
+    
+    # --------------------------------------------------------
+    # Iterar sobre los datos disponibles
+    # --------------------------------------------------------
+    pronostico_tres_dias = []
+    
+    if "data_day" in data:
+        data_day = data["data_day"]
+        
+        # Iteramos solo las primeras 3 entradas (Hoy, Mañana, Pasado)
+        for i in range(min(3, len(data_day["time"]))):
+            dia = {
+                "fecha": data_day["time"][i],
+                "temp_max": data_day["temperature_max"][i],
+                "temp_min": data_day["temperature_min"][i],
+                "precip": data_day["precipitation"][i],
+            }
+            pronostico_tres_dias.append(dia)
+            
+    return pronostico_tres_dias
+    # La función ahora devuelve una lista (ej: [{}, {}, {}])
 
 
 def home(request):

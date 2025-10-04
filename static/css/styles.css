@@ -107,7 +107,6 @@ display: block;
 }
 
 
-/* ocultar listas de error y textos de ayuda dentro de los auth-card / contact */
 .auth-card .errorlist,
 .auth-card .invalid-feedback,
 .auth-card .form-text,
@@ -116,7 +115,6 @@ display: block;
   display: none !important;
 }
 
-/* si usas contact-container / contact-wrap también */
 .contact-container .errorlist,
 .contact-container .form-text,
 .contact-container .alert-danger {
@@ -135,7 +133,7 @@ display: block;
 
 
 /* ============================================= */
-/* 1. SECCIÓN DE SERVICIOS (TARJETAS 3D) */
+/* SECCIÓN DE SERVICIOS 
 /* ============================================= */
 
 #servicios-hotel {
@@ -193,7 +191,6 @@ display: block;
  align-items: center;
 }
 
-/* --- Estilos del Frente de la Tarjeta (Fondo de Imagen con Overlay) --- */
 .card-front {
  color: white; 
  background-size: cover; 
@@ -214,14 +211,13 @@ display: block;
     z-index: 1; 
 }
 
-/* Asegura que los iconos y el texto estén por encima del overlay */
 .card-front h3, .card-front i {
     z-index: 2;
     position: relative;
     text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
 }
 
-/* RUTAS DE IMAGEN PARA CADA TARJETA (Rutas Relativas para style.css) */
+/* RUTAS DE IMAGEN PARA CADA TARJETA  */
 
 .card-3d[data-service="Spa"] .card-front {
     background-image: url('../img/spa.png');
@@ -235,7 +231,6 @@ display: block;
     background-image: url('../img/restaurant.png');
 }
 
-/* NUEVA TARJETA: Disco */
 .card-3d[data-service="Disco"] .card-front {
     background-image: url('../img/disco.png');
 }
@@ -260,29 +255,21 @@ display: block;
 /* --- Estilos del Reverso de la Tarjeta (SIN SCROLL) --- */
 
 .card-back {
- /* Mantiene el flexbox para que el contenido se distribuya */
+
  display: flex;
  flex-direction: column;
  justify-content: space-between; 
- 
  background-color: rgba(52, 58, 64, 0.95);
  color: #f8f9fa;
  transform: rotateY(180deg);
- 
- /* Eliminamos el padding de aquí para dárselo al enlace expandido (.btn-full-link) */
  padding: 0; 
 }
 
-/*
-   ¡ELIMINAMOS el selector .btn-ver-mas COMPLETO!
-   Sus estilos se mueven a .btn-text-display
-*/
 
 /* ---------------------------------------------------- */
 /* NUEVOS ESTILOS PARA HACER TODA LA TARJETA CLICKABLE */
 /* ---------------------------------------------------- */
 
-/* 1. Hace que el enlace ocupe toda la cara posterior */
 .card-back .btn-full-link {
     position: absolute; 
     top: 0;
@@ -290,39 +277,35 @@ display: block;
     width: 100%;
     height: 100%;
     
-    /* Repetimos la configuración Flexbox para que el contenido se vea */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     
-    /* Resetea estilos de enlace y añade padding */
     text-decoration: none; 
     color: #f8f9fa; /* Color de texto base para el contenido */
-    padding: 20px; /* Aquí ponemos el padding de la tarjeta */
+    padding: 20px;
 }
 
-/* 2. Estilo del Párrafo dentro del enlace */
 .card-back .btn-full-link p {
     font-size: 1.1rem;
     text-align: center;
     margin-bottom: 15px;
-    width: 100%; /* Asegura que el párrafo ocupe el espacio */
+    width: 100%; 
 }
 
-/* 3. Estilo para el botón de 'Lo quiero!' (el nuevo span) */
 .btn-text-display {
     display: inline-block;
     padding: 8px 20px;
-    background-color: #ffc107; /* Fondo amarillo */
+    background-color: #ffc107; 
     color: #1a1a1a;
     border-radius: 5px;
     font-weight: 600;
     transition: background-color 0.3s;
-    /* Centrado horizontal */
+    /* Centrado  */
     align-self: center; 
 }
 
-/* 4. Efecto hover en el botón (Se activa al pasar sobre toda la tarjeta) */
+
 .card-back .btn-full-link:hover .btn-text-display {
     background-color: #e0a800;
 }
@@ -331,28 +314,27 @@ display: block;
 
 /* Estilos para el botón flotante de WhatsApp */
 #whatsapp-button-container {
-    position: fixed; /* Lo fija a la ventana del navegador */
-    bottom: 0px; /* Pegado al extremo inferior */
-    left: 0%; /* Pegado al extremo izquierdo */
-    z-index: 1000; /* Asegura que esté por encima de todo */
-    opacity: 0.85; /* Un poco de transparencia */
-    transition: opacity 0.3s, transform 0.3s; /* Transición suave al pasar el mouse */
+    position: fixed; 
+    bottom: 0px; 
+    left: 0%; 
+    z-index: 1000;
+    opacity: 0.85; 
+    transition: opacity 0.3s, transform 0.3s; 
 }
 
 #whatsapp-button-container:hover {
-    opacity: 1; /* Sin transparencia al pasar el mouse */
-    transform: scale(1.05); /* Ligeramente más grande al pasar el mouse */
+    opacity: 1; 
+    transform: scale(1.05); 
 }
 
 #whatsapp-button-container img {
-    max-width: 60px; /* Tamaño del botón, puedes ajustarlo */
+    max-width: 60px; 
     height: auto;
     display: block;
-    padding: 10px; /* Pequeño padding alrededor de la imagen */
-    filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.4)); /* Sombra para que resalte */
+    padding: 10px; 
+    filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.4));
 }
 
-/* Ajuste opcional: Para que no esté 100% pegado al borde, puedes añadir un pequeño margen */
 
 #whatsapp-button-container {
     bottom: 40px;
