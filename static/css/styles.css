@@ -257,37 +257,75 @@ display: block;
  font-weight: 600;
 }
 
-/* --- Estilos del Reverso de la Tarjeta --- */
+/* --- Estilos del Reverso de la Tarjeta (SIN SCROLL) --- */
+
 .card-back {
+ /* Mantiene el flexbox para que el contenido se distribuya */
+ display: flex;
+ flex-direction: column;
+ justify-content: space-between; 
+ 
  background-color: rgba(52, 58, 64, 0.95);
  color: #f8f9fa;
- transform: rotateY(180deg); 
+ transform: rotateY(180deg);
+ 
+ /* Eliminamos el padding de aquí para dárselo al enlace expandido (.btn-full-link) */
+ padding: 0; 
 }
 
-.card-back p {
- font-size: 1.1rem;
- margin-bottom: 20px;
- text-align: center;
+/*
+   ¡ELIMINAMOS el selector .btn-ver-mas COMPLETO!
+   Sus estilos se mueven a .btn-text-display
+*/
+
+/* ---------------------------------------------------- */
+/* NUEVOS ESTILOS PARA HACER TODA LA TARJETA CLICKABLE */
+/* ---------------------------------------------------- */
+
+/* 1. Hace que el enlace ocupe toda la cara posterior */
+.card-back .btn-full-link {
+    position: absolute; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    /* Repetimos la configuración Flexbox para que el contenido se vea */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    
+    /* Resetea estilos de enlace y añade padding */
+    text-decoration: none; 
+    color: #f8f9fa; /* Color de texto base para el contenido */
+    padding: 20px; /* Aquí ponemos el padding de la tarjeta */
 }
 
-.btn-ver-mas {
- display: inline-block;
- padding: 8px 20px;
- background-color: #ffc107; 
- color: #1a1a1a;
- text-decoration: none;
- border-radius: 5px;
- font-weight: 600;
- transition: background-color 0.3s;
+/* 2. Estilo del Párrafo dentro del enlace */
+.card-back .btn-full-link p {
+    font-size: 1.1rem;
+    text-align: center;
+    margin-bottom: 15px;
+    width: 100%; /* Asegura que el párrafo ocupe el espacio */
 }
 
-.btn-ver-mas:hover {
- background-color: #e0a800;
+/* 3. Estilo para el botón de 'Lo quiero!' (el nuevo span) */
+.btn-text-display {
+    display: inline-block;
+    padding: 8px 20px;
+    background-color: #ffc107; /* Fondo amarillo */
+    color: #1a1a1a;
+    border-radius: 5px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+    /* Centrado horizontal */
+    align-self: center; 
 }
 
-
-
-
+/* 4. Efecto hover en el botón (Se activa al pasar sobre toda la tarjeta) */
+.card-back .btn-full-link:hover .btn-text-display {
+    background-color: #e0a800;
+}
 
 
 
