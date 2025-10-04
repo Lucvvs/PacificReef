@@ -149,6 +149,20 @@
     <form id="registerForm" method="post" novalidate action="">
       {% csrf_token %}
 
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+
+{% if form.non_field_errors %}
+  {% for error in form.non_field_errors %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+  {% endfor %}
+{% endif %}
+
+
       {# ---- Render de campos + errores por campo ---- #}
       {% for field in form %}
         <div class="form-group {% if field.field.widget.input_type == 'password' %}pwd-wrap{% endif %}">

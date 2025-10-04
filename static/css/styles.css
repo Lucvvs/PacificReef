@@ -71,19 +71,21 @@ p {
 
 
 #recepcionista-img-container {
-    position: absolute;
-    bottom: 140px;    
-    right: 5%;
-    z-index: 10;
-    pointer-events: none;
-    opacity: 0.7;   
-}
+position: fixed; 
+bottom: 0px;
+right: 0%;
+z-index: 1000; 
+pointer-events: none; 
+opacity: 0.85;
+transition: opacity 0.3s;
+} 
 
 #recepcionista-img-container img {
-    max-width: 200px; 
-    height: auto;
-    display: block;
-}
+max-width: 200px; 
+height: auto;
+display: block;
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5)); 
+} 
 
 
 @media (max-width: 992px) {
@@ -119,4 +121,202 @@ p {
 .contact-container .form-text,
 .contact-container .alert-danger {
   display: none !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* ============================================= */
+/* 1. SECCIÓN DE SERVICIOS (TARJETAS 3D) */
+/* ============================================= */
+
+#servicios-hotel {
+ padding-top: 60px;
+ padding-bottom: 60px;
+}
+
+.titulo-seccion {
+ color: #ffffff; 
+ font-weight: 700;
+ text-transform: uppercase;
+ letter-spacing: 2px;
+ text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); 
+}
+
+/* --- Estilos base de la Tarjeta --- */
+.card-3d {
+ background-color: transparent;
+ width: 100%;
+ height: 300px;
+ perspective: 1000px;
+ cursor: pointer;
+ margin: 10px;
+}
+
+.card-inner {
+ position: relative;
+ width: 100%;
+ height: 100%;
+ text-align: center;
+ transition: transform 0.8s;
+ transform-style: preserve-3d; 
+ box-shadow: 0 15px 30px rgba(0, 0, 0, 0.8);
+ border-radius: 15px;
+ border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Efecto de volteo al pasar mouse */
+.card-3d:hover .card-inner {
+ transform: rotateY(180deg);
+}
+
+/* Estilos de las caras (frente y reverso) */
+.card-front, .card-back {
+ position: absolute;
+ width: 100%;
+ height: 100%;
+ -webkit-backface-visibility: hidden; 
+ backface-visibility: hidden;
+ border-radius: 15px;
+ padding: 20px;
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-items: center;
+}
+
+/* --- Estilos del Frente de la Tarjeta (Fondo de Imagen con Overlay) --- */
+.card-front {
+ color: white; 
+ background-size: cover; 
+ background-position: center; 
+ background-color: #343a40; /* Color de fallback */
+}
+
+/* Overlay (Superposición Oscura) */
+.card-front:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4); 
+    border-radius: 15px;
+    z-index: 1; 
+}
+
+/* Asegura que los iconos y el texto estén por encima del overlay */
+.card-front h3, .card-front i {
+    z-index: 2;
+    position: relative;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+}
+
+/* RUTAS DE IMAGEN PARA CADA TARJETA (Rutas Relativas para style.css) */
+
+.card-3d[data-service="Spa"] .card-front {
+    background-image: url('../img/spa.png');
+}
+
+.card-3d[data-service="Piscina"] .card-front {
+    background-image: url('../img/piscina.png');
+}
+
+.card-3d[data-service="Restaurant"] .card-front {
+    background-image: url('../img/restaurant.png');
+}
+
+/* NUEVA TARJETA: Disco */
+.card-3d[data-service="Disco"] .card-front {
+    background-image: url('../img/disco.png');
+}
+
+
+.icon-servicio {
+ font-size: 4rem;
+ margin-bottom: 15px;
+ transition: transform 0.3s;
+}
+
+.card-3d:hover .icon-servicio {
+ transform: scale(1.1);
+}
+
+.card-front h3 {
+ margin: 0;
+ font-size: 1.5rem;
+ font-weight: 600;
+}
+
+/* --- Estilos del Reverso de la Tarjeta --- */
+.card-back {
+ background-color: rgba(52, 58, 64, 0.95);
+ color: #f8f9fa;
+ transform: rotateY(180deg); 
+}
+
+.card-back p {
+ font-size: 1.1rem;
+ margin-bottom: 20px;
+ text-align: center;
+}
+
+.btn-ver-mas {
+ display: inline-block;
+ padding: 8px 20px;
+ background-color: #ffc107; 
+ color: #1a1a1a;
+ text-decoration: none;
+ border-radius: 5px;
+ font-weight: 600;
+ transition: background-color 0.3s;
+}
+
+.btn-ver-mas:hover {
+ background-color: #e0a800;
+}
+
+
+
+
+
+
+
+/* Estilos para el botón flotante de WhatsApp */
+#whatsapp-button-container {
+    position: fixed; /* Lo fija a la ventana del navegador */
+    bottom: 0px; /* Pegado al extremo inferior */
+    left: 0%; /* Pegado al extremo izquierdo */
+    z-index: 1000; /* Asegura que esté por encima de todo */
+    opacity: 0.85; /* Un poco de transparencia */
+    transition: opacity 0.3s, transform 0.3s; /* Transición suave al pasar el mouse */
+}
+
+#whatsapp-button-container:hover {
+    opacity: 1; /* Sin transparencia al pasar el mouse */
+    transform: scale(1.05); /* Ligeramente más grande al pasar el mouse */
+}
+
+#whatsapp-button-container img {
+    max-width: 60px; /* Tamaño del botón, puedes ajustarlo */
+    height: auto;
+    display: block;
+    padding: 10px; /* Pequeño padding alrededor de la imagen */
+    filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.4)); /* Sombra para que resalte */
+}
+
+/* Ajuste opcional: Para que no esté 100% pegado al borde, puedes añadir un pequeño margen */
+
+#whatsapp-button-container {
+    bottom: 40px;
+    left: -5px;
 }
