@@ -90,35 +90,7 @@ class RoomList(ListView):
         ctx = super().get_context_data(**kwargs)
         ctx["current"] = "room_list"
         return ctx
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        url = "https://my.meteoblue.com/packages/basic-1h_basic-day"
-        params = {
-            "apikey": settings.METEOBLUE_API_KEY,
-            "lat": -33.4569,
-            "lon": -70.6483,
-            "asl": 556,
-            "format": "json"
-        }
-        try:
-            r = requests.get(url, params=params, timeout=5)
-            data = r.json()
-            clima = []
-            if "data_day" in data and "time" in data["data_day"]:
-                for i in range(min(3, len(data["data_day"]["time"]))):
-                    clima.append({
-                        "fecha": data["data_day"]["time"][i],
-                        "temp_max": data["data_day"]["temperature_max"][i],
-                        "temp_min": data["data_day"]["temperature_min"][i],
-                    })
-            context["clima"] = clima
-        except Exception as e:
-            context["clima"] = []
-            print("Error clima contacto:", e)
-
-        return context
+        
 
 class RoomDetail(DetailView):
     model = Room

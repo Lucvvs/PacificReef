@@ -38,10 +38,10 @@
   }
 
   .g-recaptcha {
-  display: flex;
-  justify-content: center;
-  margin: 1rem auto;
-}
+    display: flex;
+    justify-content: center;
+    margin: 1rem auto;
+  }
 
   .brand {
     display:flex;
@@ -145,28 +145,33 @@
       <small>Regístrate para comenzar a gestionar tus reservas</small>
     </header>
 
-    <form method="post" novalidate>
+    <!-- 👇 ID agregado para el JS -->
+    <form id="registerForm" method="post" novalidate action="">
       {% csrf_token %}
 
-      {# Muestra errores no-field y errores de campos (estilo similar al login) #}
-      {% if form.errors %}
-        {% for field in form %}
-          {% for error in field.errors %}
-            <div class="alert alert-danger" role="alert">{{ error }}</div>
-          {% endfor %}
-        {% endfor %}
-        {% for error in form.non_field_errors %}
-          <div class="alert alert-danger" role="alert">{{ error }}</div>
-        {% endfor %}
-      {% endif %}
-
-      {# Render de campos: si querés que salgan en orden específico, ponlos manualmente; aquí iteramos genericamente #}
+      {# ---- Render de campos + errores por campo ---- #}
       {% for field in form %}
         <div class="form-group {% if field.field.widget.input_type == 'password' %}pwd-wrap{% endif %}">
           <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
           {{ field }}
+
+          {# errores del campo (incluye captcha) #}
+          {% if field.errors %}
+            {% for error in field.errors %}
+              <div class="alert alert-danger mt-2">{{ error }}</div>
+            {% endfor %}
+          {% endif %}
+
+          {# ayuda si existe #}
           {% if field.help_text %}
             <small class="form-text text-muted" style="color:var(--muted)">{{ field.help_text }}</small>
+          {% endif %}
+
+          {# contenedor de error inline por JS solo para captcha (UX) #}
+          {% if field.name == "captcha" %}
+            <div id="captcha-inline-error" class="alert alert-danger mt-2 d-none">
+              ⚠️ Debes completar el reCAPTCHA antes de continuar.
+            </div>
           {% endif %}
         </div>
       {% endfor %}
@@ -176,44 +181,65 @@
       </div>
 
       <div class="divider"><span>o</span></div>
-
-      <p class="small-note">¿Ya tienes una cuenta? <a href="{% url 'login' %}" style="color:var(--accent); font-weight:700; text-decoration:none;">Inicia sesión</a></p>
+      <p class="small-note">¿Ya tienes una cuenta?
+        <a href="{% url 'login' %}" style="color:var(--accent); font-weight:700; text-decoration:none;">Inicia sesión</a>
+      </p>
     </form>
   </main>
 </div>
 
+{# 👇 Script oficial de Google reCAPTCHA (necesario para grecaptcha.getResponse) #}
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
 <script>
-  // Añade botones para mostrar/ocultar todos los inputs password que se rendericen en el form
-  (function(){
-    const pwdInputs = Array.from(document.querySelectorAll('.auth-card input[type="password"]'));
-    pwdInputs.forEach((input, idx) => {
-      // evita duplicar si ya existe
-      const parent = input.closest('.pwd-wrap') || input.parentElement;
-      if (!parent) return;
+document.addEventListener("DOMContentLoaded", function() {
+  // Enganchar el form por ID (evita null en addEventListener)
+  const form = document.getElementById("registerForm");
+  if (!form) return;
 
-      // crear botón solo si no existe
-      if (parent.querySelector('.pwd-toggle-btn')) return;
+  // Mensaje inline por JS (UX); el backend igualmente valida
+  const inlineErr = document.getElementById("captcha-inline-error");
 
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'pwd-toggle-btn';
-      btn.setAttribute('aria-label','Mostrar contraseña');
-      btn.textContent = 'Mostrar';
-      btn.addEventListener('click', () => {
-        if (input.type === 'password') {
-          input.type = 'text';
-          btn.textContent = 'Ocultar';
-          btn.setAttribute('aria-pressed','true');
-        } else {
-          input.type = 'password';
-          btn.textContent = 'Mostrar';
-          btn.setAttribute('aria-pressed','false');
-        }
-        input.focus();
-      });
-      parent.style.position = 'relative';
-      parent.appendChild(btn);
+  form.addEventListener("submit", function(e) {
+    // Si la API aún no cargó, deja que Django valide (no bloqueamos)
+    if (typeof grecaptcha === "undefined") return;
+
+    const response = grecaptcha.getResponse();
+
+    // Si no marcaron el captcha, mostramos mensaje UX y NO enviamos
+    if (!response || response.length === 0) {
+      e.preventDefault();
+      if (inlineErr) inlineErr.classList.remove("d-none");
+      // opcional: scroll hacia el captcha para que el usuario lo vea
+      try { document.querySelector(".g-recaptcha").scrollIntoView({behavior:"smooth", block:"center"}); } catch(e){}
+    } else {
+      if (inlineErr) inlineErr.classList.add("d-none");
+    }
+  });
+
+  // Toggle password (igual a tu lógica original, sin romper nada)
+  const pwdInputs = document.querySelectorAll('.auth-card input[type="password"]');
+  pwdInputs.forEach((input) => {
+    const parent = input.closest('.pwd-wrap') || input.parentElement;
+    if (!parent || parent.querySelector('.pwd-toggle-btn')) return;
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pwd-toggle-btn';
+    btn.textContent = 'Mostrar';
+    btn.addEventListener('click', () => {
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = 'Ocultar';
+      } else {
+        input.type = 'password';
+        btn.textContent = 'Mostrar';
+      }
+      input.focus();
     });
-  })();
+    parent.style.position = 'relative';
+    parent.appendChild(btn);
+  });
+});
 </script>
 {% endblock %}
